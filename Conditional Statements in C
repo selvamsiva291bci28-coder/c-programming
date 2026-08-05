@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+int main() {
+    int n;
+    
+    // Safely parse the input integer from standard input
+    if (scanf("%d", &n) != 1) {
+        return 0;
+    }
+    
+    // Look-up table mapping array indices 1-9 directly to their words.
+    // Index 0 is left empty since n is guaranteed to be a positive integer.
+    const char *words[] = {
+        "", "one", "two", "three", "four", "five", 
+        "six", "seven", "eight", "nine"
+    };
+    
+    // Evaluate constraints to match output criteria
+    if (n >= 1 && n <= 9) {
+        printf("%s\n", words[n]);
+    } else if (n > 9) {
+        printf("Greater than 9\n");
+    }
+    
+    return 0;
+}
