@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <stdlib.h>
+
+int main() 
+{
+    int n;
+    if (scanf("%d", &n) != 1) return 0;
+    
+    // The total size of the square grid is 2n - 1
+    int len = 2 * n - 1;
+
+    // Loop through each row
+    for (int i = 0; i < len; i++) {
+        // Loop through each column
+        for (int j = 0; j < len; j++) {
+            
+            // Find the minimum distance to the four edges: top, bottom, left, right
+            int min_dist = i < j ? i : j;
+            min_dist = min_dist < len - 1 - i ? min_dist : len - 1 - i;
+            min_dist = min_dist < len - 1 - j ? min_dist : len - 1 - j;
+            
+            // The value to print decreases by the minimum distance from the border
+            printf("%d ", n - min_dist);
+        }
+        // Move to the next line after completing a row
+        printf("\n");
+    }
+    
+    return 0;
+}
