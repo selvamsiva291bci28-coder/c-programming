@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Custom comparator for qsort
+// Compares two string combinations: (s1 + s2) vs (s2 + s1)
+int compare(const void* a, const void* b) {
+    char const* s1 = *(char const**)a;
+    char const* s2 = *(char const**)b;
+    
+    // Allocate space for concatenated versions
+    char combination1[24];
+    char combination2[24];
+    
+    strcpy(combination1, s1);
+    strcat(combination1, s2);
+    
+    strcpy(combination2, s2);
+    strcat(combination2, s1);
+    
+    // Sort in descending order (larger combination comes first)
+    return strcmp(combination2, combination1);
+}
+
+char* largestNumber(int* nums, int numsSize) {
+    if (numsSize == 0) {
+        char* empty = malloc(1 * sizeof(char));
+        empty[0] = '\0';
+        return empty;
+    }
+
+    // Allocate an array of strings to store converted numbers
+    char** str_nums = malloc(numsSize * sizeof(char*));
+    int total_length = 0;
+
+    for (int i = 0; i < numsSize; i++) {
+        str_nums[i] = malloc(12 * sizeof(char)); // Fits any 32-bit integer
+        sprintf(str_nums[i], "%d", nums[i]);
+        total_length += strlen(str_nums[i]);
+    }
+
+    // Sort strings using our custom combination rule
+    qsort(str_nums, numsSize, sizeof(char*), compare);
+
+    // Edge Case: If the largest number after sorting is "0", the entire result is "0"
+    if (strcmp(str_nums[0], "0") == 0) {
+        char* zero_res = malloc(2 * sizeof(char));
+        strcpy(zero_res, "0");
+        
+        // Free allocated memory
+        for (int i = 0; i < numsSize; i++) free(str_nums[i]);
+        free(str_nums);
+        
+        return zero_res;
+    }
+
+    // Allocate memory for the final output string
+    char* result = malloc((total_length + 1) * sizeof(char));
+    result[0] = '\0';
+
+    // Concatenate all sorted strings
+    for (int i = 0; i < numsSize; i++) {
+        strcat(result, str_nums[i]);
+        free(str_nums[i]); // Free memory as we go
+    }
+    free(str_nums);
+
+    return result;
+}
