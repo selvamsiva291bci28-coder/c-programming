@@ -1,0 +1,39 @@
+struct ListNode* insertionSortList(struct ListNode* head) {
+    if (head == NULL || head->next == NULL) {
+        return head;
+    }
+
+    struct ListNode dummy;
+    dummy.val = 0;
+    dummy.next = head; // Start with head already in the sorted list
+
+    struct ListNode* last_sorted = head; // Tracks the end of the sorted portion
+    struct ListNode* current = head->next; // Starts at the second node
+
+    while (current != NULL) {
+        if (last_sorted->val <= current->val) {
+            // Node is already in the correct position, just advance
+            last_sorted = current;
+            current = current->next;
+        } else {
+            // Node needs to be moved out of its spot
+            struct ListNode* next_node = current->next;
+            last_sorted->next = next_node; // Remove current from the chain
+
+            // Scan from the beginning to find the correct spot
+            struct ListNode* prev = &dummy;
+            while (prev->next->val < current->val) {
+                prev = prev->next;
+            }
+
+            // Insert current between prev and prev->next
+            current->next = prev->next;
+            prev->next = current;
+
+            // Move to the next node
+            current = next_node;
+        }
+    }
+
+    return dummy.next;
+}
