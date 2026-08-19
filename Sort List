@@ -1,0 +1,50 @@
+// Helper function to merge two sorted lists
+struct ListNode* mergeLists(struct ListNode* l1, struct ListNode* l2) {
+    struct ListNode dummy;
+    struct ListNode* tail = &dummy;
+    dummy.next = NULL;
+
+    while (l1 != NULL && l2 != NULL) {
+        if (l1->val <= l2->val) {
+            tail->next = l1;
+            l1 = l1->next;
+        } else {
+            tail->next = l2;
+            l2 = l2->next;
+        }
+        tail = tail->next;
+    }
+
+    tail->next = (l1 != NULL) ? l1 : l2;
+    return dummy.next;
+}
+
+// Main function to sort the list
+struct ListNode* sortList(struct ListNode* head) {
+    if (head == NULL || head->next == NULL) {
+        return head;
+    }
+
+    // Split the list into two halves using fast/slow pointers
+    struct ListNode* slow = head;
+    struct ListNode* fast = head;
+    struct ListNode* prev = NULL;
+
+    while (fast != NULL && fast->next != NULL) {
+        prev = slow;
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    // Disconnect the first half from the second half
+    if (prev != NULL) {
+        prev->next = NULL;
+    }
+
+    // Recursively sort each half
+    struct ListNode* left = sortList(head);
+    struct ListNode* right = sortList(slow);
+
+    // Merge the sorted halves
+    return mergeLists(left, right);
+}
