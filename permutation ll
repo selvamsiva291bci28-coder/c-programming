@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+// Comparison function for sorting the input array
+int compare(const void* a, const void* b) {
+    return (*(int*)a - *(int*)b);
+}
+
+// Helper function for backtracking
+void backtrack(int* nums, int numsSize, int* current, int currentSize, 
+               bool* used, int*** result, int* returnSize, int* capacity, int** returnColumnSizes) {
+    
+    // Base case: If the current permutation is complete
+    if (currentSize == numsSize) {
+        // Resize memory if we run out of capacity
+        if (*returnSize >= *capacity) {
+            *capacity *= 2;
+            *result = (int**)realloc(*result, (*capacity) * sizeof(int*));
+            *returnColumnSizes = (int*)realloc(*returnColumnSizes, (*capacity) * sizeof(int));
+        }
+        
+        // Allocate memory for this specific permutation and copy the data
+        (*result)[*returnSize] = (int*)malloc(numsSize * sizeof(int));
+        memcpy((*result)[*returnSize], current, numsSize * sizeof(int));
+        (*returnColumnSizes)[*returnSize] = numsSize;
+        (*returnSize)++;
+        return;
+    }
+
+    for (int i = 0; i < numsSize; i++) {
+        // Skip if the element is already used in the current path
+        if (used[i]) continue;
+
+        // CRITICAL STEP TO AVOID DUPLICATES:
+        // Skip if this element is the same as the previous one, 
+        // AND the previous one has not been used yet in this recursive branch.
+        if (i > 0 && nums[i] == nums[i - 1] && !used[i - 1]) continue;
+
+        // Choose the element
+        used[i] = true;
+        current[currentSize] = nums[i];
+
+        // Recurse to build the rest of the permutation
+        backtrack(nums, numsSize, current, currentSize + 1, used, result, returnSize, capacity, returnColumnSizes);
+
+        // Undo the choice (Backtrack)
+        used[i] = false;
+    }
+}
+
+int** permuteUnique(int* nums, int numsSize, int* returnSize, int** returnColumnSizes) {
+    int capacity = 16;
+    int** result = (int**)malloc(capacity * sizeof(int*));
+    *returnColumnSizes = (int*)malloc(capacity * sizeof(int));
+    *returnSize = 0;
+
+    if (numsSize == 0) return result;
+
+    // Step 1: Sort the array to group duplicate numbers together
+    qsort(nums, numsSize, sizeof(int), compare);
+
+    // Dynamic arrays to track the state of our backtracking tree
+    int* current = (int*)malloc(numsSize * sizeof(int));
+    bool* used = (bool*)calloc(numsSize, sizeof(bool));
+
+    // Step 2: Begin backtracking
+    backtrack(nums, numsSize, current, 0, used, &result, returnSize, &capacity, returnColumnSizes);
+
+    // Free temporary helper arrays
+    free(current);
+    free(used);
+
+    return result;
+}
