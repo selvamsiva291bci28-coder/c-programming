@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char * sortSentence(char * s){
+    // Allocate space for an array of 9 string pointers (as per problem constraints)
+    char *words[9] = {NULL};
+    int count = 0;
+    
+    // Duplicate the input string because strtok modifies the string in place
+    char *s_copy = strdup(s);
+    char *token = strtok(s_copy, " ");
+    
+    while (token != NULL) {
+        int len = strlen(token);
+        // The last character is the 1-indexed position
+        int index = token[len - 1] - '1'; 
+        
+        // Allocate space for the clean word (excluding the trailing digit)
+        words[index] = (char *)malloc(len * sizeof(char));
+        strncpy(words[index], token, len - 1);
+        words[index][len - 1] = '\0'; // Null-terminate the string
+        
+        count++;
+        token = strtok(NULL, " ");
+    }
+    
+    // Allocate memory for the final output string
+    // Length of original string is a safe upper bound
+    char *result = (char *)malloc((strlen(s) + 1) * sizeof(char));
+    result[0] = '\0'; // Initialize as an empty string
+    
+    // Reconstruct the sentence in the correct order
+    for (int i = 0; i < count; i++) {
+        strcat(result, words[i]);
+        if (i < count - 1) {
+            strcat(result, " ");
+        }
+        free(words[i]); // Free individual word memory
+    }
+    
+    free(s_copy); // Free the duplicated token string
+    return result;
+}
