@@ -1,0 +1,47 @@
+// The 'struct ListNode' is already defined by the system. 
+// Do not redefine it here.
+
+struct ListNode* reverseList(struct ListNode* head) {
+    struct ListNode* prev = NULL;
+    struct ListNode* curr = head;
+    while (curr != NULL) {
+        struct ListNode* nextTemp = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = nextTemp;
+    }
+    return prev;
+}
+
+bool isPalindrome(struct ListNode* head) {
+    if (head == NULL || head->next == NULL) return true;
+
+    // Find the middle of the linked list
+    struct ListNode* slow = head;
+    struct ListNode* fast = head;
+    while (fast != NULL && fast->next != NULL) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    // Reverse the second half
+    struct ListNode* secondHalfHead = reverseList(slow);
+    struct ListNode* p1 = head;
+    struct ListNode* p2 = secondHalfHead;
+
+    // Compare the two halves
+    bool result = true;
+    while (p2 != NULL) {
+        if (p1->val != p2->val) {
+            result = false;
+            break;
+        }
+        p1 = p1->next;
+        p2 = p2->next;
+    }
+
+    // Restore the list (Good practice)
+    reverseList(secondHalfHead);
+
+    return result;
+}
