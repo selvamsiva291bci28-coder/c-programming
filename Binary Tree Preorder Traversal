@@ -1,0 +1,38 @@
+#include <stdlib.h>
+
+// Helper function to perform DFS preorder traversal and fill the array
+void helper(struct TreeNode* root, int* result, int* index) {
+    if (root == NULL) {
+        return;
+    }
+    
+    // 1. Visit Root
+    result[(*index)++] = root->val;
+    
+    // 2. Traverse Left Subtree
+    helper(root->left, result, index);
+    
+    // 3. Traverse Right Subtree
+    helper(root->right, result, index);
+}
+
+/**
+ * Note: The returned array must be dynamically allocated.
+ * The caller is responsible for freeing the memory.
+ */
+int* preorderTraversal(struct TreeNode* root, int* returnSize) {
+    // Allocate maximum possible memory based on problem constraints 
+    // (e.g., LeetCode constraints typically state maximum 100 nodes)
+    int* result = (int*)malloc(1000 * sizeof(int));
+    
+    int index = 0;
+    helper(root, result, &index);
+    
+    // Update the return size for the caller
+    *returnSize = index;
+    
+    // Optional: Reallocate to the exact size to save memory
+    result = (int*)realloc(result, index * sizeof(int));
+    
+    return result;
+}
