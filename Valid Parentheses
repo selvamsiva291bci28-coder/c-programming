@@ -1,0 +1,34 @@
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+
+bool isValid(char * s) {
+    int n = strlen(s);
+    if (n % 2 != 0) return false; // Odd length strings are always invalid
+    
+    char *stack = (char *)malloc(n * sizeof(char));
+    int top = -1;
+    
+    for (int i = 0; i < n; i++) {
+        char c = s[i];
+        if (c == '(' || c == '{' || c == '[') {
+            stack[++top] = c;
+        } else {
+            if (top == -1) {
+                free(stack);
+                return false;
+            }
+            char prev = stack[top--];
+            if ((c == ')' && prev != '(') ||
+                (c == '}' && prev != '{') ||
+                (c == ']' && prev != '[')) {
+                free(stack);
+                return false;
+            }
+        }
+    }
+    
+    bool result = (top == -1);
+    free(stack);
+    return result;
+}
