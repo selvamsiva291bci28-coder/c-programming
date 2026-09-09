@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+// Helper function to recursively perform postorder traversal
+void helper(struct TreeNode* root, int* result, int* returnSize) {
+    if (root == NULL) {
+        return;
+    }
+    
+    // 1. Traverse left subtree
+    helper(root->left, result, returnSize);
+    
+    // 2. Traverse right subtree
+    helper(root->right, result, returnSize);
+    
+    // 3. Visit the root (self)
+    result[(*returnSize)++] = root->val;
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* postorderTraversal(struct TreeNode* root, int* returnSize) {
+    // Initialize the return size to 0
+    *returnSize = 0;
+    
+    // Allocate maximum possible memory for the tree nodes.
+    // In practice on platforms like LeetCode, a node count constraint (e.g., up to 100 or 10000) is given.
+    // Assuming a general limit or using a pre-calculated size. Here we dynamically allocate up to 10000 nodes.
+    int* result = (int*)malloc(10000 * sizeof(int));
+    if (result == NULL) {
+        return NULL;
+    }
+    
+    // Start traversal
+    helper(root, result, returnSize);
+    
+    // (Optional) Resize the block of memory to the exact capacity needed
+    if (*returnSize > 0) {
+        result = (int*)realloc(result, (*returnSize) * sizeof(int));
+    } else {
+        free(result);
+        return NULL;
+    }
+    
+    return result;
+}
