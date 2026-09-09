@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+// 1. Basic Stack structure and helper implementations
+typedef struct {
+    int* data;
+    int top;
+    int capacity;
+} Stack;
+
+Stack* createStack(int capacity) {
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+    stack->data = (int*)malloc(capacity * sizeof(int));
+    stack->top = -1;
+    stack->capacity = capacity;
+    return stack;
+}
+
+void stackPush(Stack* stack, int x) {
+    stack->data[++(stack->top)] = x;
+}
+
+int stackPop(Stack* stack) {
+    return stack->data[(stack->top)--];
+}
+
+int stackPeek(Stack* stack) {
+    return stack->data[stack->top];
+}
+
+bool stackIsEmpty(Stack* stack) {
+    return stack->top == -1;
+}
+
+void stackFree(Stack* stack) {
+    free(stack->data);
+    free(stack);
+}
+
+// 2. Main MyQueue definition wrapping the two stacks
+typedef struct {
+    Stack* stack1; // For inputs
+    Stack* stack2; // For outputs
+} MyQueue;
+
+// 3. Queue operations required by LeetCode
+MyQueue* myQueueCreate() {
+    MyQueue* queue = (MyQueue*)malloc(sizeof(MyQueue));
+    // 100 capacity satisfies the maximum number of LeetCode calls constraint
+    queue->stack1 = createStack(100); 
+    queue->stack2 = createStack(100);
+    return queue;
+}
+
+// Helper utility to transfer elements from stack1 to stack2
+void shiftStacks(MyQueue* obj) {
+    if (stackIsEmpty(obj->stack2)) {
+        while (!stackIsEmpty(obj->stack1)) {
+            stackPush(obj->stack2, stackPop(obj->stack1));
+        }
+    }
+}
+
+void myQueuePush(MyQueue* obj, int x) {
+    stackPush(obj->stack1, x);
+}
+
+int myQueuePop(MyQueue* obj) {
+    shiftStacks(obj);
+    return stackPop(obj->stack2);
+}
+
+int myQueuePeek(MyQueue* obj) {
+    shiftStacks(obj);
+    return stackPeek(obj->stack2);
+}
+
+bool myQueueEmpty(MyQueue* obj) {
+    return stackIsEmpty(obj->stack1) && stackIsEmpty(obj->stack2);
+}
+
+void myQueueFree(MyQueue* obj) {
+    stackFree(obj->stack1);
+    stackFree(obj->stack2);
+    free(obj);
+}
