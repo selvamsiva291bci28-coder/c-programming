@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+// Helper function to recursively perform the inorder traversal
+void traverse(struct TreeNode* root, int* result, int* returnSize) {
+    if (root == NULL) {
+        return;
+    }
+    
+    // 1. Traverse left subtree
+    traverse(root->left, result, returnSize);
+    
+    // 2. Visit root node (store its value)
+    result[(*returnSize)++] = root->val;
+    
+    // 3. Traverse right subtree
+    traverse(root->right, result, returnSize);
+}
+
+/**
+ * Note: The returned array must be dynamically allocated.
+ * The memory must be managed by the caller, so remember to free() it when done.
+ */
+int* inorderTraversal(struct TreeNode* root, int* returnSize) {
+    // Initialize the number of elements to 0
+    *returnSize = 0;
+    
+    // Dynamically allocate memory for the result array.
+    // In a typical LeetCode constraint, a maximum of 100 nodes is expected.
+    // Alternatively, you could perform a quick pass to count nodes or use a larger safe buffer.
+    int* result = (int*)malloc(100 * sizeof(int));
+    if (result == NULL) {
+        return NULL;
+    }
+    
+    // Perform the recursive traversal
+    traverse(root, result, returnSize);
+    
+    return result;
+}
